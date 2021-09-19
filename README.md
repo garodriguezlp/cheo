@@ -1,7 +1,7 @@
 # cheo
 
-> [jbang](jbang.dev) based script for automating the creation of the folder
-> structure I use for working on my Jira issues at work
+> [jbang](jbang.dev) powered ⚡ script for automating the creation of the folder
+> structure I use for working on my tickets.
 
 ```
                    hhhhhhh
@@ -27,13 +27,13 @@ c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o
 -  Bash:
 
     ```
-    $ curl -Ls https://sh.jbang.dev | bash -s - cheo@garodriguezlp/cheo --help
+    curl -Ls https://sh.jbang.dev | bash -s - cheo@garodriguezlp/cheo --help
     ```
 
 - Windows Powershell:
 
     ```
-    $ iex "& { $(iwr -useb https://ps.jbang.dev) } cheo@garodriguezlp/cheo --help"
+    iex "& { $(iwr -useb https://ps.jbang.dev) } cheo@garodriguezlp/cheo --help"
     ```
 
 # Why cheo?
