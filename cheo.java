@@ -41,5 +41,22 @@ class cheo implements Callable<Integer> {
     public Integer call() throws Exception { // your business logic goes here...
         System.out.println("Hello " + greeting);
         return 0;
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Design: API
+        // -------------------------------------------------------------------------------------------------------------
+        // cheo [--working-dir <working-dir>] [ISSUE_ID] [DESCRIPTION...]
+        // -------------------------------------------------------------------------------------------------------------
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Design: Implementation
+        // -------------------------------------------------------------------------------------------------------------
+        // 1. Verify working dir.
+        // 2. Based on current date, check if folder structure exist, otherwise, create it.
+        //      e.g.: 2021.09.19 --> working-dir/2021/2021.09/
+        // 3. Create dir with issue id, with `notes`, T1, T2, Tn... sub dirs (to be defined).
+        // 4. Create `issue-id-TASKS.md` file within the `notes` dir, with its respective content.
+        // 5. Create `issue-id-Tn.md` files for the base tasks with its respective content.
+        // -------------------------------------------------------------------------------------------------------------
     }
 }
