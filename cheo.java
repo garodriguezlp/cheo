@@ -4,6 +4,10 @@
 import static java.lang.String.format;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.FileSystemException;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -59,24 +63,56 @@ class cheo implements Callable<Integer> {
         String title = titleParameter.stream().collect(Collectors.joining(" "));
         System.out.println("title: " + title);
 
-        validateWorkspaceDir(workspace);
+        try {
+            validateWorkspaceDir(workspace);
+            File monthlyDir = buildMonthlyDir(workspace);
+            File issueDir = createIssueDir(monthlyDir, issueId);
+        } catch (Exception ex) {
+            System.err.println(format("ERROR: %s", ex.getMessage()));
+        }
 
         // -------------------------------------------------------------------------------------------------------------
         // Design: Implementation
         // -------------------------------------------------------------------------------------------------------------
-        // 1. Verify working dir.
-        // 2. Based on current date, check if folder structure exist, otherwise, create it.
-        //      e.g.: 2021.09.19 --> working-dir/2021/2021.09/
-        // 3. Create dir with issue id, with `notes`, T1, T2, Tn... sub dirs (to be defined).
-        // 4. Create `issue-id-TASKS.md` file within the `notes` dir, with its respective content.
-        // 5. Create `issue-id-Tn.md` files for the base tasks with its respective content.
+        // 3. Create dir with issue id, with `notes`, T1, T2, Tn... sub dirs (to be
+        // defined).
+        // 4. Create `issue-id-TASKS.md` file within the `notes` dir, with its
+        // respective content.
+        // 5. Create `issue-id-Tn.md` files for the base tasks with its respective
+        // content.
         // -------------------------------------------------------------------------------------------------------------
         return 0;
     }
 
-    private void validateWorkspaceDir(File ws) {
+    private void validateWorkspaceDir(File ws) throws FileNotFoundException {
         if (!(ws.exists() && ws.isDirectory() && ws.canWrite())) {
-            System.err.println(format("ERROR: Workspace path '%s' is invalid", ws));
+            throw new FileNotFoundException(format("Workspace path '%s' is invalid", ws));
         }
     }
+
+    private File buildMonthlyDir(File ws) {
+        LocalDate now = LocalDate.now();
+        String year = String.valueOf(now.getYear());
+        String month = String.valueOf(now.getMonthValue());
+        File monthlyDir = new File(ws, Paths.get(year, year + "." + month).toString());
+
+        if (!monthlyDir.exists() && monthlyDir.mkdirs()) {
+            System.out.println("Creating monthly dir: " + monthlyDir);
+        }
+
+        return monthlyDir;
+    }
+
+    private File createIssueDir(File monthlyDir, String id) throws FileSystemException {
+        File issueDir = new File(monthlyDir, id);
+        if (issueDir.exists()) {
+            throw new IllegalArgumentException(format("Monthly dir '%s' already exists", issueDir));
+        }
+        if (!issueDir.mkdirs()) {
+            throw new FileSystemException(format("Monthly dir '%s' could not be created", issueDir));
+        }
+        System.out.println(format("Monthly dir '%s' was created", issueDir));
+        return issueDir;
+    }
+
 }
