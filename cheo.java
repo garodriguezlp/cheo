@@ -106,12 +106,12 @@ class cheo implements Callable<Integer> {
     private File createIssueDir(File monthlyDir, String id) throws FileSystemException {
         File issueDir = new File(monthlyDir, id);
         if (issueDir.exists()) {
-            throw new IllegalArgumentException(format("Monthly dir '%s' already exists", issueDir));
+            throw new IllegalArgumentException(format("Issue dir '%s' already exists", issueDir));
         }
         if (!issueDir.mkdirs()) {
-            throw new FileSystemException(format("Monthly dir '%s' could not be created", issueDir));
+            throw new FileSystemException(format("Issue dir '%s' could not be created", issueDir));
         }
-        System.out.println(format("Monthly dir '%s' was created", issueDir));
+        System.out.println(format("Issue dir '%s' was created", issueDir));
         return issueDir;
     }
 
