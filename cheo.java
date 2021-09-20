@@ -1,6 +1,8 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS info.picocli:picocli:4.5.0
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -39,11 +41,11 @@ class cheo implements Callable<Integer> {
             defaultValue = "${env:CHEO_WORKSPACE}", description = "The workspace dir. Defaults to 'env:CHEO_WORKSPACE'")
     private File workspace;
 
-    @Parameters(index = "0", arity = "1")
+    @Parameters(index = "0", arity = "1", description = "The issue identifier")
     private String issueId;
 
-    @Parameters(index = "1..*")
-    private List<String> issueDescription;
+    @Parameters(index = "1..*", description = "The issue title")
+    private List<String> titleParameter;
 
     public static void main(String... args) {
         int exitCode = new CommandLine(new cheo()).execute(args);
@@ -54,14 +56,10 @@ class cheo implements Callable<Integer> {
     public Integer call() throws Exception {
         System.out.println("workspace: " + workspace);
         System.out.println("issueId: " + issueId);
-        System.out.println("issueDescription: " + issueDescription.stream().collect(Collectors.joining(" ")));
-        return 0;
+        String title = titleParameter.stream().collect(Collectors.joining(" "));
+        System.out.println("title: " + title);
 
-        // -------------------------------------------------------------------------------------------------------------
-        // Design: API
-        // -------------------------------------------------------------------------------------------------------------
-        // cheo [--working-dir <working-dir>] [ISSUE_ID] [DESCRIPTION...]
-        // -------------------------------------------------------------------------------------------------------------
+        validateWorkspaceDir(workspace);
 
         // -------------------------------------------------------------------------------------------------------------
         // Design: Implementation
@@ -73,5 +71,12 @@ class cheo implements Callable<Integer> {
         // 4. Create `issue-id-TASKS.md` file within the `notes` dir, with its respective content.
         // 5. Create `issue-id-Tn.md` files for the base tasks with its respective content.
         // -------------------------------------------------------------------------------------------------------------
+        return 0;
+    }
+
+    private void validateWorkspaceDir(File ws) {
+        if (!(ws.exists() && ws.isDirectory() && ws.canWrite())) {
+            System.err.println(format("ERROR: Workspace path '%s' is invalid", ws));
+        }
     }
 }
