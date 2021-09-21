@@ -92,9 +92,9 @@ class cheo implements Callable<Integer> {
 
     private File buildMonthlyDir(File ws) {
         LocalDate now = LocalDate.now();
-        String year = String.valueOf(now.getYear());
-        String month = String.valueOf(now.getMonthValue());
-        String monthlyDirName = year + "." + month;
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        String monthlyDirName = format("%d.%02d", year, month);
         File monthlyDir = new File(ws, monthlyDirName);
 
         if (!monthlyDir.exists() && monthlyDir.mkdirs()) {
