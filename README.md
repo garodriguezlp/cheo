@@ -22,7 +22,7 @@ c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o
     cccccccccccccccchhhhhhh     hhhhhhh    eeeeeeeeeeeeee     ooooooooooo
 ```
 
-# Want to give it a try?
+## Want to give it a try?
 
 -  Bash:
 
@@ -36,6 +36,12 @@ c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o
     iex "& { $(iwr -useb https://ps.jbang.dev) } cheo@garodriguezlp/cheo --help"
     ```
 
-# Why cheo?
+- Install as a Jbang app
+
+    ```
+    jbang app install cheo@garodriguezlp/cheo"
+    ```
+
+## Why cheo?
 
 I'm not good at naming things, I love salsa, and yes, I like [Cheo Feliciano](https://en.wikipedia.org/wiki/Cheo_Feliciano)
