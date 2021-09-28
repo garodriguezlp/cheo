@@ -5,8 +5,9 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.FileSystemException;
-import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -58,6 +59,7 @@ class cheo implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        // @todo: consider improving the execution header
         System.out.println("workspace: " + workspace);
         System.out.println("issueId: " + issueId);
         String title = titleParameter.stream().collect(Collectors.joining(" "));
@@ -67,6 +69,8 @@ class cheo implements Callable<Integer> {
             validateWorkspaceDir(workspace);
             File monthlyDir = buildMonthlyDir(workspace);
             File issueDir = createIssueDir(monthlyDir, issueId);
+            File notesDir = createNotesDir(issueDir);
+            File tasksFile = createTasksFile(notesDir, issueId, title);
         } catch (Exception ex) {
             System.err.println(format("ERROR: %s", ex.getMessage()));
         }
@@ -74,12 +78,9 @@ class cheo implements Callable<Integer> {
         // -------------------------------------------------------------------------------------------------------------
         // Design: Implementation
         // -------------------------------------------------------------------------------------------------------------
-        // 3. Create dir with issue id, with `notes`, T1, T2, Tn... sub dirs (to be
-        // defined).
-        // 4. Create `issue-id-TASKS.md` file within the `notes` dir, with its
-        // respective content.
-        // 5. Create `issue-id-Tn.md` files for the base tasks with its respective
-        // content.
+        // 2. Develop an algorithm that when given a task it'd able to added to the
+        // tasks file, create the corresponding
+        // md for the task and create the folder
         // -------------------------------------------------------------------------------------------------------------
         return 0;
     }
@@ -114,6 +115,21 @@ class cheo implements Callable<Integer> {
         }
         System.out.println(format("Issue dir '%s' was created", issueDir));
         return issueDir;
+    }
+
+    private File createNotesDir(File issueDir) throws FileSystemException {
+        File notesDir = new File(issueDir, "notes");
+        if (!notesDir.mkdirs()) {
+            throw new FileSystemException(format("Notes dir '%s' could not be created", notesDir));
+        }
+        System.out.println(format("Notes dir '%s' was created", notesDir));
+        return notesDir;
+    }
+
+    private File createTasksFile(File notesDir, String id, String title) throws IOException {
+        File tasksFile = new File(notesDir, id + "-TASKS.md");
+        Files.writeString(tasksFile.toPath(), format("# %s: %s%n", id, title));
+        return tasksFile;
     }
 
 }
