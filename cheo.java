@@ -66,7 +66,7 @@ class cheo implements Callable<Integer> {
         "    cccccccccccccccchhhhhhh     hhhhhhh    eeeeeeeeeeeeee     ooooooooooo",
         ""
     );
-    private static List<String> DEFAULT_TASKS = List.of( "Plan", "Desig", "Dev", "Test", "Integrate", "Release", "Retro");
+    private static List<String> DEFAULT_TASKS = List.of( "Plan", "Design", "Dev", "Test", "Integrate", "Release", "Retro");
 
     @Option(names = { "-w", "--workspace" },
             required = true,
