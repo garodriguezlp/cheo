@@ -2,6 +2,7 @@
 //DEPS info.picocli:picocli:4.5.0
 
 import static java.lang.String.format;
+import static java.lang.System.lineSeparator;
 import static java.nio.file.StandardOpenOption.APPEND;
 
 import java.io.File;
@@ -12,7 +13,6 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -103,7 +103,7 @@ class cheo implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        System.out.println(String.join(System.lineSeparator(), HEADER));
+        System.out.println(String.join(lineSeparator(), HEADER));
         System.out.println("");
         System.out.println("--- ----------------------------------------------------------------------------");
         System.out.println("Input parameters:");
@@ -112,7 +112,7 @@ class cheo implements Callable<Integer> {
         String title = String.join(" ", titleParameter);
         System.out.println("title: " + title);
         List<String> taskNames = tasks == null || tasks.isEmpty() ? DEFAULT_TASKS : tasks;
-        System.out.println("tasks: " + String.join(", ", taskNames));
+        System.out.println("tasks:" + lineSeparator() + String.join("," + lineSeparator(), taskNames));
         System.out.println("--- ----------------------------------------------------------------------------");
         System.out.println("");
 
