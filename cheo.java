@@ -66,7 +66,14 @@ class cheo implements Callable<Integer> {
         "    cccccccccccccccchhhhhhh     hhhhhhh    eeeeeeeeeeeeee     ooooooooooo",
         ""
     );
-    private static List<String> DEFAULT_TASKS = List.of("Plan & Design", "Dev", "Test", "Integrate", "Release", "Deploy", "Retro");
+    private static List<String> DEFAULT_TASKS = List.of(
+        "Plan & Design: Brainstorming and strategy",
+        "Dev: Implementation",
+        "Test: Manual verifications",
+        "Integrate: Do not break the CI build",
+        "Release: Release notes and Jira fix version",
+        "Deploy: APP configuration in higher environments",
+        "Retro: What we learn");
 
     @Option(names = { "-w", "--workspace" },
             required = true,
