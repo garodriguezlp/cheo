@@ -39,7 +39,7 @@ c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o
 - Install as a Jbang app
 
     ```
-    jbang app install cheo@garodriguezlp/cheo"
+    jbang app install cheo@garodriguezlp/cheo
     ```
 
 ## Why cheo?
