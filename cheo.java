@@ -1,9 +1,11 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS info.picocli:picocli:4.5.0
+//DEPS org.apache.commons:commons-lang3:3.11
 
-import static java.lang.String.format;
-import static java.lang.System.lineSeparator;
-import static java.nio.file.StandardOpenOption.APPEND;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,79 +16,65 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
+import static java.lang.String.format;
+import static java.lang.System.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_UNIX;
 
 @Command(name = "cheo",
-    mixinStandardHelpOptions = true,
-    showEndOfOptionsDelimiterInUsageHelp = true,
-    version = "cheo 0.1",
-    description = "cheo made with jbang",
-    header = {
-        "",
-        "                   hhhhhhh",
-        "                   h:::::h",
-        "                   h:::::h",
-        "                   h:::::h",
-        "    cccccccccccccccch::::h hhhhh           eeeeeeeeeeee       ooooooooooo",
-        "  cc:::::::::::::::ch::::hh:::::hhh      ee::::::::::::ee   oo:::::::::::oo",
-        " c:::::::::::::::::ch::::::::::::::hh   e::::::eeeee:::::eeo:::::::::::::::o",
-        "c:::::::cccccc:::::ch:::::::hhh::::::h e::::::e     e:::::eo:::::ooooo:::::o",
-        "c::::::c     ccccccch::::::h   h::::::he:::::::eeeee::::::eo::::o     o::::o",
-        "c:::::c             h:::::h     h:::::he:::::::::::::::::e o::::o     o::::o",
-        "c:::::c             h:::::h     h:::::he::::::eeeeeeeeeee  o::::o     o::::o",
-        "c::::::c     ccccccch:::::h     h:::::he:::::::e           o::::o     o::::o",
-        "c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o",
-        " c:::::::::::::::::ch:::::h     h:::::h e::::::::eeeeeeee  o:::::::::::::::o",
-        "  cc:::::::::::::::ch:::::h     h:::::h  ee:::::::::::::e   oo:::::::::::oo",
-        "    cccccccccccccccchhhhhhh     hhhhhhh    eeeeeeeeeeeeee     ooooooooooo",
-        ""
-})
+        mixinStandardHelpOptions = true,
+        showEndOfOptionsDelimiterInUsageHelp = true,
+        version = "cheo 0.1",
+        description = "cheo made with jbang",
+        header = {
+                "",
+                " .o88b. db   db d88888b  .d88b.",
+                "d8P  Y8 88   88 88'     .8P  Y8.",
+                "8P      88ooo88 88ooooo 88    88",
+                "8b      88~~~88 88~~~~~ 88    88",
+                "Y8b  d8 88   88 88.     `8b  d8'",
+                " `Y88P' YP   YP Y88888P  `Y88P'",
+                ""
+        })
 class cheo implements Callable<Integer> {
 
     private static List<String> HEADER = List.of(
-        "",
-        "                   hhhhhhh",
-        "                   h:::::h",
-        "                   h:::::h",
-        "                   h:::::h",
-        "    cccccccccccccccch::::h hhhhh           eeeeeeeeeeee       ooooooooooo",
-        "  cc:::::::::::::::ch::::hh:::::hhh      ee::::::::::::ee   oo:::::::::::oo",
-        " c:::::::::::::::::ch::::::::::::::hh   e::::::eeeee:::::eeo:::::::::::::::o",
-        "c:::::::cccccc:::::ch:::::::hhh::::::h e::::::e     e:::::eo:::::ooooo:::::o",
-        "c::::::c     ccccccch::::::h   h::::::he:::::::eeeee::::::eo::::o     o::::o",
-        "c:::::c             h:::::h     h:::::he:::::::::::::::::e o::::o     o::::o",
-        "c:::::c             h:::::h     h:::::he::::::eeeeeeeeeee  o::::o     o::::o",
-        "c::::::c     ccccccch:::::h     h:::::he:::::::e           o::::o     o::::o",
-        "c:::::::cccccc:::::ch:::::h     h:::::he::::::::e          o:::::ooooo:::::o",
-        " c:::::::::::::::::ch:::::h     h:::::h e::::::::eeeeeeee  o:::::::::::::::o",
-        "  cc:::::::::::::::ch:::::h     h:::::h  ee:::::::::::::e   oo:::::::::::oo",
-        "    cccccccccccccccchhhhhhh     hhhhhhh    eeeeeeeeeeeeee     ooooooooooo",
-        ""
-    );
-    private static List<String> DEFAULT_TASKS = List.of(
-        "Plan & Design: Brainstorming and strategy",
-        "Dev: Implementation",
-        "Test: Manual verifications",
-        "Integrate: Do not break the CI build",
-        "Release: Release notes and Jira fix version",
-        "Deploy: APP configuration in higher environments",
-        "Retro: What we learn");
+            "",
+            " .o88b. db   db d88888b  .d88b.",
+            "d8P  Y8 88   88 88'     .8P  Y8.",
+            "8P      88ooo88 88ooooo 88    88",
+            "8b      88~~~88 88~~~~~ 88    88",
+            "Y8b  d8 88   88 88.     `8b  d8'",
+            " `Y88P' YP   YP Y88888P  `Y88P'");
 
-    @Option(names = { "-w", "--workspace" },
+    private static List<String> DEFAULT_TASKS = List.of(
+            "Plan & Design: Brainstorming and strategy",
+            "Dev: Implementation",
+            "Test: Manual verifications",
+            "Integrate: Do not break the CI build",
+            "Release: Release notes and Jira fix version",
+            "Deploy: APP configuration in higher environments",
+            "Retro: What we learn");
+
+    @Option(names = {"-w", "--workspace"},
             required = true,
             paramLabel = "WORKSPACE",
             defaultValue = "${env:CHEO_WORKSPACE}",
             description = "The workspace dir. Defaults to 'env:CHEO_WORKSPACE'")
     private File workspace;
 
-    @Option(names = { "-t", "--tasks" },
+    @Option(names = {"-t", "--tasks"},
             paramLabel = "TASKS",
             arity = "1..*",
             description = "The list of tasks")
     private List<String> tasks;
+
+    @Option(names = {"-e", "--editor"},
+            required = true,
+            paramLabel = "EDITOR",
+            defaultValue = "code",
+            description = "The text code editor")
+    private String editor;
 
     @Parameters(index = "0", arity = "1", description = "The issue identifier")
     private String issueId;
@@ -96,25 +84,25 @@ class cheo implements Callable<Integer> {
 
     public static void main(String... args) {
         int exitCode = new CommandLine(new cheo())
-            .setUsageHelpAutoWidth(true)
-            .execute(args);
-        System.exit(exitCode);
+                .setUsageHelpAutoWidth(true)
+                .execute(args);
+        exit(exitCode);
     }
 
     @Override
     public Integer call() throws Exception {
-        System.out.println(String.join(lineSeparator(), HEADER));
-        System.out.println("");
-        System.out.println("--- ----------------------------------------------------------------------------");
-        System.out.println("Input parameters:");
-        System.out.println("workspace: " + workspace);
-        System.out.println("issueId: " + issueId);
+        out.println(String.join(lineSeparator(), HEADER));
+        out.println("");
+        out.println("--- ----------------------------------------------------------------------------");
+        out.println("Input parameters:");
+        out.println("workspace: " + workspace);
+        out.println("issueId: " + issueId);
         String title = String.join(" ", titleParameter);
-        System.out.println("title: " + title);
+        out.println("title: " + title);
         List<String> taskNames = tasks == null || tasks.isEmpty() ? DEFAULT_TASKS : tasks;
-        System.out.println("tasks:" + lineSeparator() + String.join("," + lineSeparator(), taskNames));
-        System.out.println("--- ----------------------------------------------------------------------------");
-        System.out.println("");
+        out.println("tasks:" + lineSeparator() + String.join("," + lineSeparator(), taskNames));
+        out.println("--- ----------------------------------------------------------------------------");
+        out.println("");
 
         try {
             validateWorkspaceDir(workspace);
@@ -123,8 +111,9 @@ class cheo implements Callable<Integer> {
             File notesDir = createNotesDir(issueDir);
             File tasksFile = createTasksFile(notesDir, issueId, title);
             createTasks(issueId, taskNames, notesDir, tasksFile);
+            openEditor(issueDir.getAbsolutePath());
         } catch (Exception ex) {
-            System.err.println(format("ERROR: %s", ex.getMessage()));
+            err.println(format("ERROR: %s", ex.getMessage()));
         }
         return 0;
     }
@@ -143,7 +132,7 @@ class cheo implements Callable<Integer> {
         File monthlyDir = new File(ws, monthlyDirName);
 
         if (!monthlyDir.exists() && monthlyDir.mkdirs()) {
-            System.out.println("Creating monthly dir: " + monthlyDir);
+            out.println("Creating monthly dir: " + monthlyDir);
         }
 
         return monthlyDir;
@@ -157,7 +146,7 @@ class cheo implements Callable<Integer> {
         if (!issueDir.mkdirs()) {
             throw new FileSystemException(format("Issue dir '%s' could not be created", issueDir));
         }
-        System.out.println(format("Issue dir '%s' was created", issueDir));
+        out.println(format("Issue dir '%s' was created", issueDir));
         return issueDir;
     }
 
@@ -166,25 +155,35 @@ class cheo implements Callable<Integer> {
         if (!notesDir.mkdirs()) {
             throw new FileSystemException(format("Notes dir '%s' could not be created", notesDir));
         }
-        System.out.println(format("Notes dir '%s' was created", notesDir));
+        out.println(format("Notes dir '%s' was created", notesDir));
         return notesDir;
     }
 
     private File createTasksFile(File notesDir, String id, String title) throws IOException {
         File tasksFile = new File(notesDir, id + "-TASKS.md");
         Files.writeString(tasksFile.toPath(), format("# %s: %s%n%n", id, title));
-        System.out.println(format("Task file '%s' was created", tasksFile));
+        out.println(format("Task file '%s' was created", tasksFile));
         return tasksFile;
     }
 
     private void createTasks(String id, List<String> taskNames, File notesDir, File tasksFile) throws IOException {
         for (int number = 1; number <= taskNames.size(); number++) {
             String task = taskNames.get(number - 1);
-            System.out.println(format("Adding task %d: %s", number, task));
+            out.println(format("Adding task %d: %s", number, task));
             Files.writeString(tasksFile.toPath(), format("- [ ] T%d: %s%n%n", number, task), APPEND);
             File taskFile = new File(notesDir, format("%s-T%d.md", id, number));
             Files.writeString(taskFile.toPath(), format("# T%d: %s%n%n", number, task));
         }
     }
 
+    private void openEditor(final String notesFile) throws IOException {
+        String[] cmd;
+        if (IS_OS_UNIX) {
+            cmd = new String[]{"sh", "-c", editor, notesFile};
+        } else {
+            cmd = new String[]{"cmd", "/c", editor, notesFile};
+        }
+        out.println("Running `" + String.join(" ", cmd) + "`");
+        new ProcessBuilder(cmd).start();
+    }
 }
