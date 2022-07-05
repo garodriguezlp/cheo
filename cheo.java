@@ -6,6 +6,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
+import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -37,15 +40,6 @@ import static org.apache.commons.lang3.SystemUtils.IS_OS_UNIX;
                 ""
         })
 class cheo implements Callable<Integer> {
-
-    private static List<String> HEADER = List.of(
-            "",
-            " .o88b. db   db d88888b  .d88b.",
-            "d8P  Y8 88   88 88'     .8P  Y8.",
-            "8P      88ooo88 88ooooo 88    88",
-            "8b      88~~~88 88~~~~~ 88    88",
-            "Y8b  d8 88   88 88.     `8b  d8'",
-            " `Y88P' YP   YP Y88888P  `Y88P'");
 
     private static List<String> DEFAULT_TASKS = List.of(
             "Plan & Design: Brainstorming and strategy",
@@ -82,6 +76,9 @@ class cheo implements Callable<Integer> {
     @Parameters(index = "1..*", description = "The issue title")
     private List<String> titleParameter;
 
+    @Spec
+    private CommandSpec spec;
+
     public static void main(String... args) {
         int exitCode = new CommandLine(new cheo())
                 .setUsageHelpAutoWidth(true)
@@ -91,7 +88,8 @@ class cheo implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        out.println(String.join(lineSeparator(), HEADER));
+        Arrays.stream(spec.usageMessage().header()).forEach(out::println);
+
         out.println("");
         out.println("--- ----------------------------------------------------------------------------");
         out.println("Input parameters:");
