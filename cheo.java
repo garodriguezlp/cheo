@@ -7,6 +7,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.PropertiesDefaultProvider;
 import picocli.CommandLine.Spec;
 import picocli.CommandLine.Model.CommandSpec;
 
