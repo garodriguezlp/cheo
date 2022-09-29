@@ -30,6 +30,7 @@ import static org.apache.commons.lang3.SystemUtils.IS_OS_UNIX;
         showEndOfOptionsDelimiterInUsageHelp = true,
         version = "cheo 0.1",
         description = "cheo made with jbang",
+        defaultValueProvider = PropertiesDefaultProvider.class,
         header = {
                 "",
                 " .o88b. db   db d88888b  .d88b.",
@@ -54,8 +55,8 @@ class cheo implements Callable<Integer> {
     @Option(names = {"-w", "--workspace"},
             required = true,
             paramLabel = "WORKSPACE",
-            defaultValue = "${env:CHEO_WORKSPACE}",
-            description = "The workspace dir. Defaults to 'env:CHEO_WORKSPACE'")
+            defaultValue = "${cheo.workspace}",
+            description = "The workspace dir. Defaults to `workspace` property on '${sys:user.home}${sys:file.separator}.cheo.properties'")
     private File workspace;
 
     @Option(names = {"-t", "--tasks"},
