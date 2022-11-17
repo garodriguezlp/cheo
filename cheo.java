@@ -3,12 +3,9 @@
 //DEPS info.picocli:picocli:4.5.0
 //DEPS org.apache.commons:commons-lang3:3.11
 
+import org.apache.commons.lang3.SystemUtils;
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.PropertiesDefaultProvider;
-import picocli.CommandLine.Spec;
+import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.File;
@@ -24,7 +21,6 @@ import java.util.concurrent.Callable;
 import static java.lang.String.format;
 import static java.lang.System.*;
 import static java.nio.file.StandardOpenOption.APPEND;
-import static org.apache.commons.lang3.SystemUtils.IS_OS_UNIX;
 
 @Command(name = "cheo",
         mixinStandardHelpOptions = true,
@@ -167,7 +163,8 @@ class cheo implements Callable<Integer> {
         return tasksFile;
     }
 
-    private void createTasks(String id, List<String> taskNames, File notesDir, File tasksFile) throws IOException {
+    private void createTasks(String id, List<String> taskNames, File notesDir, File tasksFile)
+            throws IOException {
         for (int number = 1; number <= taskNames.size(); number++) {
             String task = taskNames.get(number - 1);
             out.println(format("Adding task %d: %s", number, task));
@@ -177,14 +174,16 @@ class cheo implements Callable<Integer> {
         }
     }
 
-    private void openEditor(final String notesFile) throws IOException {
-        String[] cmd;
-        if (IS_OS_UNIX) {
-            cmd = new String[]{"sh", "-c", editor, notesFile};
-        } else {
-            cmd = new String[]{"cmd", "/c", editor, notesFile};
-        }
+    private void openEditor(final String path) throws IOException {
+        String filePath = path.contains(" ") ? format("\"%s\"", path) : path;
+        String editorCmd = String.join(" ", editor, filePath);
+
+        List<String> cmd = SystemUtils.IS_OS_UNIX ?
+                List.of("sh", "-c", editorCmd) :
+                List.of("cmd", "/c", editorCmd);
+
         out.println("Running `" + String.join(" ", cmd) + "`");
+
         new ProcessBuilder(cmd).start();
     }
 }
