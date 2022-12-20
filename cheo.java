@@ -41,13 +41,14 @@ import static java.nio.file.StandardOpenOption.APPEND;
 class cheo implements Callable<Integer> {
 
     private static List<String> DEFAULT_TASKS = List.of(
-            "Plan & Design: Brainstorming and strategy",
-            "Dev: Implementation",
-            "Test: Manual verifications",
-            "Integrate: Do not break the CI build",
-            "Release: Release notes and Jira fix version",
-            "Deploy: APP configuration in higher environments",
-            "Retro: What we learn");
+            "Discovery: Understand the problem and its context",
+            "Design: Define the solution",
+            "Dev: Implement the solution and refine design",
+            "Test: Run validations",
+            "Integrate: Pass quality gates",
+            "Release: Make sure artifacts, documentation, and issue tracking is in place",
+            "Deploy: Configure higher environments",
+            "Retro: Draw conclusions and think about improvements");
 
     @Option(names = {"-w", "--workspace"},
             required = true,
