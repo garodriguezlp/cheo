@@ -48,6 +48,7 @@ class cheo implements Callable<Integer> {
             "Integrate: Pass quality gates",
             "Release: Make sure artifacts, documentation, and issue tracking is in place",
             "Deploy: Configure higher environments",
+            "Cleanup: Clean up branches, deployment, and anything else I could have dirtied",
             "Retro: Draw conclusions and think about improvements");
 
     @Option(names = {"-w", "--workspace"},
