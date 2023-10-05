@@ -44,17 +44,17 @@ import static java.nio.file.StandardOpenOption.APPEND;
 class cheo implements Callable<Integer> {
 
     private static final String DEFAULT_TASKS =
-            "01-discover=Understand the problem and its context," +
-                    "02-design=Define the solution," +
-                    "03-develop=Implement the solution and refine the design," +
-                    "04-test=Validate the implementation," +
-                    "05-integrate=Ensure quality standards are met," +
-                    "06-release=Prepare artifacts documentation and issue tracking," +
-                    "07-configure=Set up higher environments for deployment," +
-                    "08-deploy=Launch the application in the configured environments," +
-                    "09-clean=Remove branches deployments and other clutter," +
-                    "10-demo=Share the results with the team," +
-                    "11-reflect=Analyze outcomes and identify improvements";
+            "Discover=Understand the problem and its context," +
+                    "Design=Define the solution," +
+                    "Develop=Implement the solution and refine the design," +
+                    "Test=Validate the implementation," +
+                    "Integrate=Ensure quality standards are met," +
+                    "Release=Prepare artifacts documentation and issue tracking," +
+                    "Configure=Set up higher environments for deployment," +
+                    "Deploy=Launch the application in the configured environments," +
+                    "Clean=Remove branches deployments and other clutter," +
+                    "Demo=Share the results with the team," +
+                    "Reflect=Analyze outcomes and identify improvements";
 
     @Parameters(index = "0", arity = "1", description = "The issue identifier")
     private String issueId;
@@ -155,7 +155,7 @@ class cheo implements Callable<Integer> {
     }
 
     private File createMainFile(File notesDir, String id, String title) throws IOException {
-        File mainFile = new File(notesDir, id + "-MAIN.md");
+        File mainFile = new File(notesDir, id + "-Main.md");
         Files.writeString(mainFile.toPath(), format("# %s: %s%n%n", id, title));
         out.printf("Main file '%s' was created%n", mainFile);
         return mainFile;
@@ -166,14 +166,17 @@ class cheo implements Callable<Integer> {
                              File issueDir,
                              File mainFile) throws IOException {
 
+        int counter = 0;
         for (Entry<String, String> entry : tasks.entrySet()) {
             String key = entry.getKey();
             String description = entry.getValue();
             out.printf("Adding task %s: %s%n", key, description);
-            Files.writeString(mainFile.toPath(), format("- [%s: %s](%s/%s-%s.md)%n%n", key, description, key, issueId, key), APPEND);
-            File taskFile = new File(issueDir, format("%s/%s-%s.md", key, issueId, key));
+            String filePath = format("%02d-%s/%s-%s.md", counter, key, issueId, key);
+            Files.writeString(mainFile.toPath(), format("- [%s](%s): %s%n", key, filePath, description), APPEND);
+            File taskFile = new File(issueDir, filePath);
             Files.createDirectories(taskFile.getParentFile().toPath());
             Files.writeString(taskFile.toPath(), format("# %s: %s%n%n", key, description));
+            counter++;
         }
     }
 
