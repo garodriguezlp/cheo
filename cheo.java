@@ -15,7 +15,9 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import static java.lang.String.format;
@@ -28,6 +30,7 @@ import static java.nio.file.StandardOpenOption.APPEND;
         version = "cheo 0.1",
         description = "cheo made with jbang",
         defaultValueProvider = PropertiesDefaultProvider.class,
+        usageHelpAutoWidth = true,
         header = {
                 "",
                 " .o88b. db   db d88888b  .d88b.",
@@ -40,17 +43,34 @@ import static java.nio.file.StandardOpenOption.APPEND;
         })
 class cheo implements Callable<Integer> {
 
-    private static List<String> DEFAULT_TASKS = List.of(
-            "Discovery: Understand the problem and its context",
-            "Design: Define the solution",
-            "Dev: Implement the solution and refine design",
-            "Test: Run validations",
-            "Integrate: Pass quality gates",
-            "Release: Make sure artifacts, documentation, and issue tracking is in place",
-            "Deploy: Configure higher environments",
-            "Cleanup: Clean up branches, deployment, and anything else I could have dirtied",
-            "Demo: Share with the team",
-            "Retro: Draw conclusions and think about improvements");
+    private static final String DEFAULT_TASKS =
+            "01-discover=Understand the problem and its context," +
+                    "02-design=Define the solution," +
+                    "03-develop=Implement the solution and refine the design," +
+                    "04-test=Validate the implementation," +
+                    "05-integrate=Ensure quality standards are met," +
+                    "06-release=Prepare artifacts documentation and issue tracking," +
+                    "07-configure=Set up higher environments for deployment," +
+                    "08-deploy=Launch the application in the configured environments," +
+                    "09-clean=Remove branches deployments and other clutter," +
+                    "10-demo=Share the results with the team," +
+                    "11-reflect=Analyze outcomes and identify improvements";
+
+    @Parameters(index = "0", arity = "1", description = "The issue identifier")
+    private String issueId;
+
+    @Option(names = {"-t", "--tasks"},
+            paramLabel = "TASKS",
+            arity = "1..*",
+            description = "The list of tasks",
+            split = ",",
+            defaultValue = DEFAULT_TASKS)
+    private LinkedHashMap<String, String> tasks;
+
+    @Parameters(index = "1..*",
+            arity = "1..*",
+            description = "The issue title")
+    private List<String> title;
 
     @Option(names = {"-w", "--workspace"},
             required = true,
@@ -59,12 +79,6 @@ class cheo implements Callable<Integer> {
             description = "The workspace dir. Defaults to `workspace` property on '${sys:user.home}${sys:file.separator}.cheo.properties'")
     private File workspace;
 
-    @Option(names = {"-t", "--tasks"},
-            paramLabel = "TASKS",
-            arity = "1..*",
-            description = "The list of tasks")
-    private List<String> tasks;
-
     @Option(names = {"-e", "--editor"},
             required = true,
             paramLabel = "EDITOR",
@@ -72,20 +86,11 @@ class cheo implements Callable<Integer> {
             description = "The text code editor")
     private String editor;
 
-    @Parameters(index = "0", arity = "1", description = "The issue identifier")
-    private String issueId;
-
-    @Parameters(index = "1..*", description = "The issue title")
-    private List<String> titleParameter;
-
     @Spec
     private CommandSpec spec;
 
     public static void main(String... args) {
-        int exitCode = new CommandLine(new cheo())
-                .setUsageHelpAutoWidth(true)
-                .execute(args);
-        exit(exitCode);
+        exit(new CommandLine(new cheo()).execute(args));
     }
 
     @Override
@@ -97,10 +102,10 @@ class cheo implements Callable<Integer> {
         out.println("Input parameters:");
         out.println("workspace: " + workspace);
         out.println("issueId: " + issueId);
-        String title = String.join(" ", titleParameter);
-        out.println("title: " + title);
-        List<String> taskNames = tasks == null || tasks.isEmpty() ? DEFAULT_TASKS : tasks;
-        out.println("tasks:" + lineSeparator() + String.join("," + lineSeparator(), taskNames));
+        String joinedTitle = String.join(" ", title);
+        out.println("title: " + joinedTitle);
+        out.println("tasks:");
+        tasks.forEach((k, v) -> out.printf("\t- %s: %s%n", k, v));
         out.println("--- ----------------------------------------------------------------------------");
         out.println("");
 
@@ -108,12 +113,11 @@ class cheo implements Callable<Integer> {
             validateWorkspaceDir(workspace);
             File monthlyDir = buildMonthlyDir(workspace);
             File issueDir = createIssueDir(monthlyDir, issueId);
-            File notesDir = createNotesDir(issueDir);
-            File tasksFile = createTasksFile(notesDir, issueId, title);
-            createTasks(issueId, taskNames, notesDir, tasksFile);
+            File tasksFile = createMainFile(issueDir, issueId, joinedTitle);
+            createTasks(issueId, tasks, issueDir, tasksFile);
             openEditor(issueDir.getAbsolutePath());
         } catch (Exception ex) {
-            err.println(format("ERROR: %s", ex.getMessage()));
+            err.printf("ERROR: %s%n", ex.getMessage());
         }
         return 0;
     }
@@ -146,34 +150,30 @@ class cheo implements Callable<Integer> {
         if (!issueDir.mkdirs()) {
             throw new FileSystemException(format("Issue dir '%s' could not be created", issueDir));
         }
-        out.println(format("Issue dir '%s' was created", issueDir));
+        out.printf("Issue dir '%s' was created%n", issueDir);
         return issueDir;
     }
 
-    private File createNotesDir(File issueDir) throws FileSystemException {
-        File notesDir = new File(issueDir, "notes");
-        if (!notesDir.mkdirs()) {
-            throw new FileSystemException(format("Notes dir '%s' could not be created", notesDir));
-        }
-        out.println(format("Notes dir '%s' was created", notesDir));
-        return notesDir;
+    private File createMainFile(File notesDir, String id, String title) throws IOException {
+        File mainFile = new File(notesDir, id + "-MAIN.md");
+        Files.writeString(mainFile.toPath(), format("# %s: %s%n%n", id, title));
+        out.printf("Main file '%s' was created%n", mainFile);
+        return mainFile;
     }
 
-    private File createTasksFile(File notesDir, String id, String title) throws IOException {
-        File tasksFile = new File(notesDir, id + "-TASKS.md");
-        Files.writeString(tasksFile.toPath(), format("# %s: %s%n%n", id, title));
-        out.println(format("Task file '%s' was created", tasksFile));
-        return tasksFile;
-    }
+    private void createTasks(String issueId,
+                             LinkedHashMap<String, String> tasks,
+                             File issueDir,
+                             File mainFile) throws IOException {
 
-    private void createTasks(String id, List<String> taskNames, File notesDir, File tasksFile)
-            throws IOException {
-        for (int number = 1; number <= taskNames.size(); number++) {
-            String task = taskNames.get(number - 1);
-            out.println(format("Adding task %d: %s", number, task));
-            Files.writeString(tasksFile.toPath(), format("- [ ] T%d: %s%n%n", number, task), APPEND);
-            File taskFile = new File(notesDir, format("%s-T%d.md", id, number));
-            Files.writeString(taskFile.toPath(), format("# T%d: %s%n%n", number, task));
+        for (Entry<String, String> entry : tasks.entrySet()) {
+            String key = entry.getKey();
+            String description = entry.getValue();
+            out.printf("Adding task %s: %s%n", key, description);
+            Files.writeString(mainFile.toPath(), format("- [%s: %s](%s/%s-%s.md)%n%n", key, description, key, issueId, key), APPEND);
+            File taskFile = new File(issueDir, format("%s/%s-%s.md", key, issueId, key));
+            Files.createDirectories(taskFile.getParentFile().toPath());
+            Files.writeString(taskFile.toPath(), format("# %s: %s%n%n", key, description));
         }
     }
 
