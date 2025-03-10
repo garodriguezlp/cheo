@@ -1,7 +1,6 @@
 # cheo
 
-> [jbang](jbang.dev) powered ⚡ script for automating the creation of the folder
-> structure I use for working on my tickets.
+> [jbang](https://jbang.dev) powered ⚡ script for automating the creation of the folder structure I use for working on my tickets.
 
 ```
  .o88b. db   db d88888b  .d88b.
@@ -12,26 +11,28 @@ Y8b  d8 88   88 88.     `8b  d8'
  `Y88P' YP   YP Y88888P  `Y88P'
 ```
 
-## Want to give it a try?
+## Features
 
--  Bash:
+- Automated folder structure creation
+- Easy to install and use with Jbang
+- Customizable to fit your workflow
 
-    ```
-    curl -Ls https://sh.jbang.dev | bash -s - cheo@garodriguezlp/cheo --help
-    ```
+## Installation
 
-- Windows Powershell:
+To install `cheo` as a Jbang app, run the following command:
 
-    ```
-    iex "& { $(iwr -useb https://ps.jbang.dev) } cheo@garodriguezlp/cheo --help"
-    ```
+```sh
+jbang app install cheo@garodriguezlp
+```
 
-- Install as a Jbang app
+## Usage
 
-    ```
-    jbang app install cheo@garodriguezlp/cheo
-    ```
+After installation, you can use the following command to get help and discover how to use this tool:
+
+```sh
+cheo --help
+```
 
 ## Why cheo?
 
-I'm not good at naming things, I love salsa, and yes, I like [Cheo Feliciano](https://en.wikipedia.org/wiki/Cheo_Feliciano)
+I'm not good at naming things, I love salsa, and yes, I like [Cheo Feliciano](https://en.wikipedia.org/wiki/Cheo_Feliciano).
