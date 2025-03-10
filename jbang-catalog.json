@@ -1,9 +1,0 @@
-{
-  "catalogs": {},
-  "aliases": {
-    "cheo": {
-      "script-ref": "cheo.java"
-    }
-  },
-  "templates": {}
-}
