@@ -44,11 +44,10 @@ import static java.nio.file.StandardOpenOption.APPEND;
 class cheo implements Callable<Integer> {
 
     private static final String DEFAULT_TASKS =
-        "Analyze=Clarify requirements; investigate context; define the scope," +
-        "Build=Design; code; develop unit tests for the solution," +
-        "Verify=Conduct thorough testing; perform integration checks; ensure quality standards," +
-        "Release=Prepare documentation; configure environments; deploy the application," +
-        "WrapUp=Present outcomes; clean up resources; document learnings; reflect on improvements";
+            "Analyze=Clarify requirements; define scope; investigate context," +
+            "Build=Design; code; write tests," +
+            "Verify=Test thoroughly; check integration; ensure quality; collaborate with QA," +
+            "WrapUp=Validate config; clean resources; update docs; present outcomes";
 
     @Parameters(index = "0", arity = "1", description = "The issue identifier")
     private String issueId;
